@@ -13,10 +13,10 @@ can swap from a config file. Simulation only; nothing here touches hardware.
 
 ```
 clips/<name>.mp4
-  |  detector         find the dancer, follow her through the clip
+  |  detector         find the dancer, follow them through the clip
   v  tracks/<name>.tracks.npz
-  |  estimator        her body pose in 3D, per frame
-  |  hand_estimator   her fingers
+  |  estimator        their body pose in 3D, per frame
+  |  hand_estimator   their fingers
   v  raw/<name>.pose.npz
   |  retargeter       that motion, onto the G1's joints
   v  motion/<name>.npz            the reference the robot is asked to follow

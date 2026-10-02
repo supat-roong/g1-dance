@@ -550,7 +550,7 @@ def test_clamp_reports_the_violation_rate(model):
 
 
 def test_minimum_inter_foot_distance_is_enforced(model):
-    """The fix the article's author needed when his G1 kicked its own feet."""
+    """The fix the article's author needed when their G1 kicked its own feet."""
     q = np.tile(model.default_qpos, (3, 1))
     hip_roll = [BODY_JOINTS.index(f"{s}_hip_roll_joint") for s in ("left", "right")]
     q[:, hip_roll] = [-0.35, 0.35]           # knees crossed over the midline

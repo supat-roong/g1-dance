@@ -7,7 +7,7 @@ to follow. Those are properties of the sequence, not of any one frame, so they
 are fixed here.
 
 The minimum inter-foot distance is not a theoretical nicety. It is the specific
-fix the reference article's author needed after his G1 kicked its own ankles: a
+fix the reference article's author needed after their G1 kicked its own ankles: a
 human dancer's feet cross the midline freely because human legs are narrower at
 the hip than a G1's, so an unconstrained retarget asks for a pose the robot
 physically cannot hold.

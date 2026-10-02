@@ -272,7 +272,7 @@ def steady_boxes(bbox: np.ndarray, fps: float, window_s: float = 0.5,
     the dancer raises an arm or crouches. On koidance the box runs from 450 to
     657 px and changes by up to 14 percent between frames, which reads as the
     camera pumping. Fixing the size at a high percentile keeps the dancer in
-    frame at her widest, and a moving average over `window_s` turns centre
+    frame at their widest, and a moving average over `window_s` turns centre
     jitter into a pan. Frames with no box borrow their neighbours' centre.
     """
     b = np.asarray(bbox, np.float64)

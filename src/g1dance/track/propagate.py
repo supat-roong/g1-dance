@@ -1,6 +1,6 @@
 """Carry one chosen dancer across every cut, or admit they are not there.
 
-This is the module the article's author replaced with scissors. He cropped the
+This is the module the article's author replaced with scissors. They cropped the
 intended dancer out of group shots by hand and spliced the takes together, and
 called it the hardest part of the whole process. The automation is one idea:
 the user identifies the subject once, in the shot where they are clearest, and
