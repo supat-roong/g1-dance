@@ -171,7 +171,7 @@ part of the key, so after changing it pass `--force`.
   open_loop              0.000     0.120     0.159   0.103
 ```
 
-That is the koidance demo below.
+That is for the dance demo gif values.
 
 - **Similarity** is the correlation of wrist and elbow trajectories, in the
   body frame, between the video and the reference, the reference and the robot,
@@ -191,47 +191,6 @@ the robot. It reads the clip, config and controller from the run's record, and
 reports whether the robot fell or the clip ran out. `--full` plays the whole
 clip from the first frame; without it, one 10 s evaluation episode is shown.
 
-## The koidance demo
-
-The animation at the top is a 78 s duet, run through `pipelines/gvhmr.yaml`
-and rendered with `--full`. The clip is not part of the repository; with your
-own copy at `clips/koidance.mp4`:
-
-```bash
-g1dance run    clips/koidance.mp4 --name koidance --exp koidance --spec pipelines/gvhmr.yaml
-g1dance render --name koidance --exp koidance --full
-```
-
-On an M4 laptop: about 2 hours for `run` under load from other jobs (25 minutes
-on an idle machine, almost all of it GVHMR), and 40 minutes for the render.
-The result:
-
-| | |
-| --- | --- |
-| end to end similarity | 0.731 |
-| upright after 5 s, nominal / randomised | 1.00 / 1.00 |
-| full clip, played as one episode | 3897 steps, no fall |
-
-The animation is 40 s to 52 s of the bottom half of `dance_full.mp4`, the
-reference and the robot, at 10 frames a second. The full render's top half is
-the source and the source with its 2D pose, which is why it is not committed.
-
-## Which spec to use
-
-Measured on three clips, 12 seeds each, upper body. Each path's similarity is
-scored against both its own estimator's landmarks and the other's, so neither
-grades itself:
-
-| clip | `zeroshot.yaml`, own / other | `gvhmr.yaml`, own / other |
-| --- | --- | --- |
-| kirari, 12 s, solo | **0.556** / 0.454 | 0.543 / **0.794** |
-| watwing, 12 s, group | 0.346 / 0.325 | **0.592** / **0.727** |
-| koidance, 78 s, duet | 0.464 / 0.407 | **0.506** / **0.728** |
-
-Every run kept every episode upright. `gvhmr.yaml` is the better path on two
-clips of three and close on the third; `zeroshot.yaml` runs in seconds rather
-than about 0.6 s a frame on CPU, and needs no SMPL-X.
-
 ## Limits
 
 - **Arms and torso only.** In `upper_body` the robot does not step, travel, or
@@ -249,8 +208,6 @@ than about 0.6 s a frame on CPU, and needs no SMPL-X.
 The code in this repository is MIT licensed; see [LICENSE](LICENSE). That
 covers this project's own code only. The models, assets and repositories below
 keep their own terms.
-
-Source video is never committed; `clips/` is ignored.
 
 The **SMPL-X body model is non-commercial and registration gated.** It is not
 shipped, downloaded automatically or committed. Everything built on it, which is
