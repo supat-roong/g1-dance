@@ -1,0 +1,7 @@
+# The lower bound, and the fastest spec to run: position PD straight to the
+# reference, no policy at all. Every other row is read as a distance from this.
+detector:   mediapipe
+estimator:  mediapipe
+retargeter: builtin
+controller: open_loop
+env_config: configs/upper_body.yaml

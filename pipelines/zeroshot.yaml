@@ -1,0 +1,8 @@
+# The fast path, with no body model: MediaPipe landmarks through this repo's own
+# IK, driven by the downloaded zero-shot tracker. Seconds per clip, and none of
+# SMPL-X's licence terms. Measured on kirari: end to end 0.556, every episode up.
+detector:   mediapipe
+estimator:  mediapipe
+retargeter: builtin
+controller: humanoid_gpt
+env_config: configs/upper_body.yaml

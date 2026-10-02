@@ -1,0 +1,9 @@
+# The only path whose reference root carries translation: GVHMR predicts in
+# gravity-view coordinates, and GMR keeps the root it is given. Everything
+# downstream is the zero-shot spec, so a comparison against it isolates the
+# perception and retargeting stages.
+detector:   mediapipe
+estimator:  gvhmr
+retargeter: gmr
+controller: humanoid_gpt
+env_config: configs/upper_body.yaml
