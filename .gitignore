@@ -1,0 +1,27 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+
+# pipeline artifacts, anchored to the repo root so they do not shadow the
+# src/g1dance/motion package
+/clips/
+/tracks/
+/raw/
+/motion/
+/runs/
+*.mp4
+assets/mediapipe/
+runs_*.log
+
+# Licensed body models. Registration-gated and non-commercial, so they are
+# never committed: the repository stores the path and the parameters needed to
+# reproduce a result, not the model itself.
+assets/smplx/
+assets/mano/
+
+# External checkouts and their weights: GVHMR, SMPLest-X and GMR, roughly 15 GB.
+# Cloned rather than vendored, so the repository records which commit and which
+# checkpoint a result came from and not the code itself.
+third_party/
