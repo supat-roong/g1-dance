@@ -11,18 +11,19 @@ can swap from a config file. Simulation only; nothing here touches hardware.
 
 ## How it works
 
-```
-clips/<name>.mp4
-  |  detector         find the dancer, follow them through the clip
-  v  tracks/<name>.tracks.npz
-  |  estimator        their body pose in 3D, per frame
-  |  hand_estimator   their fingers
-  v  raw/<name>.pose.npz
-  |  retargeter       that motion, onto the G1's joints
-  v  motion/<name>.npz            the reference the robot is asked to follow
-  |  controller       a policy that tracks it, in MuJoCo
-  v  runs/<exp>/record.json       how well, and how stably
-     runs/<exp>/dance.mp4         what it looks like
+```mermaid
+flowchart TD
+    clip["clips/#lt;name#gt;.mp4"]
+    tracks["tracks/#lt;name#gt;.tracks.npz"]
+    raw["raw/#lt;name#gt;.pose.npz"]
+    motion["motion/#lt;name#gt;.npz<br/><i>the reference the robot is asked to follow</i>"]
+    record["runs/#lt;exp#gt;/record.json<br/><i>how well, and how stably</i>"]
+    video["runs/#lt;exp#gt;/dance.mp4<br/><i>what it looks like</i>"]
+
+    clip -->|"<b>detector</b><br/>find the dancer, follow them through the clip"| tracks
+    tracks -->|"<b>estimator</b>: their body pose in 3D, per frame<br/><b>hand_estimator</b>: their fingers"| raw
+    raw -->|"<b>retargeter</b><br/>that motion, onto the G1's joints"| motion
+    motion -->|"<b>controller</b><br/>a policy that tracks it, in MuJoCo"| record & video
 ```
 
 Each of the five stages is a registry of interchangeable modules, chosen by
