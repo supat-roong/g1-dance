@@ -2,6 +2,8 @@
 name = "g1dance"
 version = "0.1.0"
 description = "Make a Unitree G1 dance from a video, zero shot, in simulation"
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.12,<3.13"
 dependencies = [
   "mujoco>=3.2",

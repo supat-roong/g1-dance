@@ -245,6 +245,10 @@ than about 0.6 s a frame on CPU, and needs no SMPL-X.
 
 ## Licensing
 
+The code in this repository is MIT licensed; see [LICENSE](LICENSE). That
+covers this project's own code only. The models, assets and repositories below
+keep their own terms.
+
 Source video is never committed; `clips/` is ignored.
 
 The **SMPL-X body model is non-commercial and registration gated.** It is not
