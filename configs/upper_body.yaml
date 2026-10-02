@@ -1,0 +1,96 @@
+# Upper body: the 17 waist-and-arm DoF follow the reference; the legs balance.
+#
+# The legs' reference is replaced by the default stance, so the controller keeps
+# the robot standing while the arms and torso dance. It cannot step, travel, or
+# turn more than about 30 degrees. This is the mode the measured results and
+# the koidance demo use. `whole_body.yaml` passes the legs through instead.
+mode: upper_body
+
+env:
+  decimation: 4              # 5 ms physics -> 50 Hz control
+  window: 4                  # upcoming reference frames in the observation
+  # The action drives all 29 body DoF; the reward still tracks only the upper
+  # 17. The original design fixed this at the 17 tracked DoF and that is wrong:
+  # held by position PD alone the legs do not hold. From the default stance with
+  # fixed targets and no motion playing, this G1 passes an upright dot of 0.5 at
+  # 1.4 s and is on the floor by 2 s, and the support polygon is not the reason,
+  # the CoM sits well inside it. Trained anyway at 17 DoF the policy reached a
+  # mean episode length of 52.7 control steps against 48.8 for a zero action
+  # after 100k steps, and was still near 57 at 547k. With the legs in the action
+  # it went from 67 to 105 control steps inside 1M and was still climbing.
+  # "tracked" restores the 17-DoF action, and is worth keeping only as the
+  # control that shows why the legs have to be in there.
+  #
+  # Read any smoke run against this longer than you want to: on the real clip
+  # motion/kirari.npz the mean episode length sits at 53 to 57 control steps
+  # through the first 400k steps, which is indistinguishable from the 56 a zero
+  # action gets, and only leaves that floor around 500k: 58.5 at 500k, 63 at
+  # 666k, 67 at 930k. The gentle synthetic wave behaves the same way, flat at
+  # 63 to 71 until 400k and then 80 at 494k, 107 at 657k, 163 at 1M. A 400k
+  # step smoke test cannot see the difference between this working and not.
+  control_set: all
+  action_scale: 1.0          # multiplies the per-joint scales in model_config
+  max_episode_steps: 500     # 10 s
+  # Both measured from the model, see sim/env.py: 0.757 is where the lowest
+  # collidable point of the default stance touches z=0, and 0.715 is where the
+  # pelvis settles once gravity has loaded the leg PD.
+  spawn_height: 0.757
+  nominal_height: 0.715
+  root_ref: nominal          # the monocular root is not trusted in mode A
+  track_root_xy: false
+  termination:
+    min_height: 0.45
+    min_upright: 0.5
+    max_joint_error: 1.2     # rad, mean over tracked DoF
+    max_link_error: 0.8      # m, weighted rms over key links
+  domain_rand:
+    enabled: true
+    friction: [0.7, 1.3]
+    mass_scale: [0.9, 1.1]
+    kp_scale: [0.9, 1.1]
+    kv_scale: [0.9, 1.1]
+    qpos_noise: 0.03
+    qvel_noise: 0.15
+    push_interval_s: 3.0
+    push_vel: 0.25
+
+# Positive weight: the term is larger when better. Negative weight: the term
+# returns a penalty magnitude. See sim/rewards.py.
+rewards:
+  # v2. The v1 policy reached survival 0.83 by splaying into a brace and
+  # skating: foot separation mean 0.608 m and max 1.037 m, against 0.238 m
+  # open loop and 0.395 m for the reference, with foot slip 0.700 against
+  # 0.077. Every change below closes that escape hatch or pays more for
+  # fidelity, since survival on its own was never the goal.
+  # k is 10.0, not 2.0. Measured on the 16M policy, track_joint sat at 0.859
+  # of its maximum 1.0 while the per-joint error was 0.213 rad, about 12
+  # degrees: the exponential was saturated, so there was almost no gradient
+  # left to pay for tracking better. track_link already used k=20 by contrast.
+  track_joint:    {weight: 4.0, k: 10.0}
+  # same reason: track_root read 0.969 of 1.0, which is no pressure at all
+  track_root:     {weight: 1.5, k_height: 60.0, k_upright: 15.0}
+  track_link:     {weight: 2.5, k: 20.0}     # v1 2.0
+  track_vel:      {weight: 0.5, k: 0.05}
+  # heading only, not world position. Without it the policy is free to rotate,
+  # and the first runs did: upright and moving, but facing a different way from
+  # the dancer, which reads as a different dance however well the joints track.
+  # weight 3.0, not 1.5. The reference heading sweeps 148 degrees across this
+  # clip because the dancer physically turns, so matching it is a pivot under
+  # load rather than a small correction. At 1.5, against track_joint's 4.0, it
+  # moved mean heading error only from 61.9 to 55.0 degrees over 2.7M steps.
+  track_yaw:      {weight: 3.0, k: 2.0}
+  alive:          {weight: 0.5}
+  feet_distance:  {weight: -5.0, min_dist: 0.15}
+  # upper bound set above the reference's own p90 of 0.530 m, so it catches
+  # the brace without fighting the wide stances the dance actually contains
+  stance_width:   {weight: -4.0, max_dist: 0.55}
+  leg_posture:    {weight: -1.0}
+  feet_slip:      {weight: -1.5}             # v1 -0.2
+  # v1 -0.5. On this reference self collision is a property of the retargeted
+  # motion, not of the policy: 302 of 600 frames self collide, so the term was
+  # penalising the policy for going where tracking pays it to go. Kept small
+  # enough to discourage novel self collisions without fighting the reference.
+  self_collision: {weight: -0.05}
+  action_rate:    {weight: -0.1}
+  torque:         {weight: -2.0e-5}
+  joint_limit:    {weight: -2.0}

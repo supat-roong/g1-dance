@@ -1,0 +1,48 @@
+# Whole body: all 29 body DoF follow the reference, root included.
+#
+# Same environment as upper_body.yaml, but the legs keep their reference and the
+# robot spawns on the reference root, so it can step and travel. With the
+# zero-shot tracker this measured worse than upper body: on kirari, end to end
+# 0.65 against 0.79, and about half the episodes fell.
+mode: whole_body
+
+env:
+  decimation: 4
+  window: 4
+  action_scale: 1.0
+  max_episode_steps: 500
+  spawn_height: 0.757        # touchdown height of the default stance
+  nominal_height: 0.715      # settled pelvis height under load; see sim/env.py
+  root_ref: motion           # mode B owns the root, so it uses the reference
+  track_root_xy: true
+  link_weight:               # ankles matter now; the torso anchors the rest
+    left_ankle_roll_link: 1.0
+    right_ankle_roll_link: 1.0
+  termination:
+    min_height: 0.45
+    min_upright: 0.5
+    max_joint_error: 1.0
+    max_link_error: 0.6
+  domain_rand:
+    enabled: true
+    friction: [0.7, 1.3]
+    mass_scale: [0.9, 1.1]
+    kp_scale: [0.9, 1.1]
+    kv_scale: [0.9, 1.1]
+    qpos_noise: 0.03
+    qvel_noise: 0.15
+    push_interval_s: 3.0
+    push_vel: 0.25
+
+rewards:
+  track_joint:    {weight: 4.0, k: 2.0}
+  track_link:     {weight: 3.0, k: 20.0}
+  track_vel:      {weight: 0.5, k: 0.05}
+  track_root:     {weight: 2.0, k_height: 20.0, k_upright: 5.0, k_xy: 2.0, k_yaw: 2.0}
+  alive:          {weight: 0.25}
+  feet_distance:  {weight: -5.0, min_dist: 0.13}
+  feet_slip:      {weight: -0.3}
+  self_collision: {weight: -0.5}
+  action_rate:    {weight: -0.1}
+  torque:         {weight: -2.0e-5}
+  joint_limit:    {weight: -2.0}
